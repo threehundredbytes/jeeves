@@ -54,5 +54,14 @@ public class DiscordMessageListener extends ListenerAdapter {
 
             message.getChannel().sendMessageEmbeds(messageEmbed).queue();
         }
+
+        if (message.getContentDisplay().startsWith("!shutdown")) {
+            if (event.getAuthor().getIdLong() != botOwnerId) {
+                return;
+            }
+
+            message.reply("Shutting down...").queue();
+            event.getJDA().shutdown();
+        }
     }
 }
