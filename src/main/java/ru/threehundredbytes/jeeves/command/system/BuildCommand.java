@@ -5,28 +5,22 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import ru.threehundredbytes.jeeves.command.Command;
+import ru.threehundredbytes.jeeves.command.CommandGroup;
 import ru.threehundredbytes.jeeves.command.DiscordCommand;
+import ru.threehundredbytes.jeeves.model.BotContext;
 
 import java.awt.*;
 
-@DiscordCommand(key = "build")
+@DiscordCommand(key = "build", group = CommandGroup.SYSTEM)
 @RequiredArgsConstructor
 public class BuildCommand extends Command {
     private final BuildProperties buildProperties;
 
-    @Value("${jeeves.discord.owner.id}")
-    private long botOwnerId;
-
     @Override
-    public void execute(MessageReceivedEvent event) {
-        if (event.getAuthor().getIdLong() != botOwnerId) {
-            return;
-        }
-
-        User botOwner = event.getJDA().retrieveUserById(botOwnerId).complete();
+    public void execute(MessageReceivedEvent event, BotContext botContext) {
+        User botOwner = botContext.getBotOwner();
 
         MessageEmbed messageEmbed = new EmbedBuilder()
                 .setTitle("Bot application build information")

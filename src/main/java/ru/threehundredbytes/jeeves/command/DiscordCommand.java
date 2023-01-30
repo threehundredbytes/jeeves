@@ -10,4 +10,5 @@ import java.lang.annotation.*;
 @Inherited
 public @interface DiscordCommand {
     String key();
+    CommandGroup group();
 }

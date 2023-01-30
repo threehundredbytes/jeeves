@@ -1,27 +1,23 @@
 package ru.threehundredbytes.jeeves.command.system;
 
+import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import org.springframework.beans.factory.annotation.Value;
 import ru.threehundredbytes.jeeves.command.Command;
+import ru.threehundredbytes.jeeves.command.CommandGroup;
 import ru.threehundredbytes.jeeves.command.DiscordCommand;
+import ru.threehundredbytes.jeeves.model.BotContext;
 
 import java.awt.*;
 
-@DiscordCommand(key = "guilds")
+@DiscordCommand(key = "guilds", group = CommandGroup.SYSTEM)
+@RequiredArgsConstructor
 public class GuildsCommand extends Command {
-    @Value("${jeeves.discord.owner.id}")
-    private long botOwnerId;
-
     @Override
-    public void execute(MessageReceivedEvent event) {
-        if (event.getAuthor().getIdLong() != botOwnerId) {
-            return;
-        }
-
-        User botOwner = event.getJDA().retrieveUserById(botOwnerId).complete();
+    public void execute(MessageReceivedEvent event, BotContext botContext) {
+        User botOwner = botContext.getBotOwner();
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setTitle("Bot's guild list")
