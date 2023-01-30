@@ -26,5 +26,4 @@ public class DiscordConfiguration {
                 .addEventListeners(discordMessageListener)
                 .build();
     }
-
 }
