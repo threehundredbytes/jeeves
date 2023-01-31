@@ -1,5 +1,7 @@
 package ru.threehundredbytes.jeeves.listener;
 
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -12,6 +14,8 @@ import ru.threehundredbytes.jeeves.command.DiscordCommand;
 import ru.threehundredbytes.jeeves.model.BotContext;
 import ru.threehundredbytes.jeeves.service.BotOwnerService;
 import ru.threehundredbytes.jeeves.service.CommandHolderService;
+
+import static ru.threehundredbytes.jeeves.command.CommandGroup.*;
 
 @Component
 public class DiscordMessageListener extends ListenerAdapter {
@@ -28,6 +32,7 @@ public class DiscordMessageListener extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         Message message = event.getMessage();
         User user = event.getAuthor();
+        Member member = event.getMember();
 
         if (user.isBot() || !message.getContentDisplay().startsWith(PREFIX)) {
             return;
@@ -41,7 +46,13 @@ public class DiscordMessageListener extends ListenerAdapter {
         if (command != null && discordCommand != null) {
             User botOwner = botOwnerService.getBotOwner();
 
-            if (CommandGroup.SYSTEM.equals(discordCommand.group()) && !user.equals(botOwner)) {
+            CommandGroup commandGroup = discordCommand.group();
+
+            if (event.isFromGuild() && MODERATION.equals(commandGroup) && !member.hasPermission(Permission.ADMINISTRATOR)) {
+                return;
+            }
+
+            if (SYSTEM.equals(commandGroup) && !user.equals(botOwner)) {
                 return;
             }
 
