@@ -8,16 +8,17 @@ import ru.threehundredbytes.jeeves.command.Command;
 import ru.threehundredbytes.jeeves.command.CommandGroup;
 import ru.threehundredbytes.jeeves.command.CommandSource;
 import ru.threehundredbytes.jeeves.command.DiscordCommand;
+import ru.threehundredbytes.jeeves.model.BotContext;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@DiscordCommand(key = "ban", group = CommandGroup.MODERATION, source = CommandSource.GUILD_MESSAGE)
+@DiscordCommand(key = "command.moderation.ban.key", group = CommandGroup.MODERATION, source = CommandSource.GUILD_MESSAGE)
 public class BanCommand extends Command {
     @Override
-    public void execute(MessageReceivedEvent event) {
+    public void execute(MessageReceivedEvent event, BotContext botContext) {
         Message message = event.getMessage();
 
         List<Member> mentionedMembers = message.getMentions().getMembers();

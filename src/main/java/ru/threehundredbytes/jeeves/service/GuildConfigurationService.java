@@ -15,24 +15,37 @@ public class GuildConfigurationService {
     @Value("${jeeves.prefix.default}")
     private String defaultPrefix;
 
+    @Value("${jeeves.locale.default}")
+    private String defaultLocale;
+
     public GuildConfiguration getGuildConfiguration(Guild guild) {
         return guildConfigurationRepository.findById(guild.getIdLong())
-                .orElseGet(() -> createGuildConfiguration(guild));
+                .orElseGet(() -> createDefaultGuildConfiguration(guild));
     }
 
     public void setPrefix(String prefix, Guild guild) {
         var guildConfiguration = guildConfigurationRepository.findById(guild.getIdLong())
-                .orElseGet(() -> createGuildConfiguration(guild));
+                .orElseGet(() -> createDefaultGuildConfiguration(guild));
 
         guildConfiguration.setPrefix(prefix);
 
         guildConfigurationRepository.save(guildConfiguration);
     }
 
-    private GuildConfiguration createGuildConfiguration(Guild guild) {
+    public void setLocale(String locale, Guild guild) {
+        var guildConfiguration = guildConfigurationRepository.findById(guild.getIdLong())
+                .orElseGet(() -> createDefaultGuildConfiguration(guild));
+
+        guildConfiguration.setLocale(locale);
+
+        guildConfigurationRepository.save(guildConfiguration);
+    }
+
+    private GuildConfiguration createDefaultGuildConfiguration(Guild guild) {
         var guildConfiguration = GuildConfiguration.builder()
                 .guildId(guild.getIdLong())
                 .prefix(defaultPrefix)
+                .locale(defaultLocale)
                 .build();
 
         return guildConfigurationRepository.save(guildConfiguration);

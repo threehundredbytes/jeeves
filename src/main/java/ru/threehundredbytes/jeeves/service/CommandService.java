@@ -13,7 +13,12 @@ import ru.threehundredbytes.jeeves.command.Command;
 import ru.threehundredbytes.jeeves.command.CommandGroup;
 import ru.threehundredbytes.jeeves.command.CommandSource;
 import ru.threehundredbytes.jeeves.command.DiscordCommand;
+import ru.threehundredbytes.jeeves.model.BotContext;
+import ru.threehundredbytes.jeeves.persistence.entity.GuildConfiguration;
 import ru.threehundredbytes.jeeves.utils.ArrayUtils;
+
+import java.util.Locale;
+import java.util.Map;
 
 import static ru.threehundredbytes.jeeves.command.CommandGroup.*;
 
@@ -24,8 +29,13 @@ public class CommandService {
     private final BotOwnerService botOwnerService;
     private final GuildConfigurationService guildConfigurationService;
 
+    private final Map<String, Locale> supportedLocales;
+
     @Value("${jeeves.prefix.default}")
     private String defaultPrefix;
+
+    @Value("${jeeves.locale.default}")
+    private String defaultLocale;
 
     public void onMessageReceived(MessageReceivedEvent event) {
         Message message = event.getMessage();
@@ -33,9 +43,12 @@ public class CommandService {
         User user = event.getAuthor();
 
         String prefix = defaultPrefix;
+        Locale locale = supportedLocales.get(defaultLocale);
 
         if (message.isFromGuild()) {
-            prefix = guildConfigurationService.getGuildConfiguration(event.getGuild()).getPrefix();
+            GuildConfiguration guildConfiguration = guildConfigurationService.getGuildConfiguration(event.getGuild());
+            prefix = guildConfiguration.getPrefix();
+            locale = supportedLocales.get(guildConfiguration.getLocale());
         }
 
         if (user.isBot() || !message.getContentDisplay().startsWith(prefix)) {
@@ -43,16 +56,17 @@ public class CommandService {
         }
 
         String commandKey = message.getContentDisplay().split("\\s")[0].substring(prefix.length());
+        Command command = commandHolderService.getCommandByLocalizedKey(commandKey, locale);
 
-        Command command = commandHolderService.getCommandByKey(commandKey);
-        DiscordCommand discordCommand = commandHolderService.getDiscordCommandByKey(commandKey);
+        if (command != null) {
+            DiscordCommand discordCommand = command.getClass().getAnnotation(DiscordCommand.class);
 
-        if (command != null && discordCommand != null) {
             if (!isCommandApplicable(discordCommand, message, member, user)) {
                 return;
             }
 
-            command.execute(event);
+            BotContext botContext = new BotContext(locale);
+            command.execute(event, botContext);
         }
     }
 

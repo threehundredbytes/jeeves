@@ -10,15 +10,15 @@ import ru.threehundredbytes.jeeves.command.DiscordCommand;
 import ru.threehundredbytes.jeeves.model.BotContext;
 import ru.threehundredbytes.jeeves.service.GuildConfigurationService;
 
-@DiscordCommand(key = "command.configuration.prefix.key", group = CommandGroup.CONFIGURATION, source = CommandSource.GUILD_MESSAGE)
+@DiscordCommand(key = "command.configuration.locale.key", group = CommandGroup.CONFIGURATION, source = CommandSource.GUILD_MESSAGE)
 @RequiredArgsConstructor
-public class PrefixCommand extends Command {
+public class LocaleCommand extends Command {
     private final GuildConfigurationService guildConfigurationService;
 
     @Override
     public void execute(MessageReceivedEvent event, BotContext botContext) {
-        String prefix = event.getMessage().getContentDisplay().trim().split("\\s")[1];
-        guildConfigurationService.setPrefix(prefix, event.getGuild());
+        String locale = event.getMessage().getContentDisplay().trim().split("\\s")[1];
+        guildConfigurationService.setLocale(locale, event.getGuild());
 
         event.getMessage().addReaction(Emoji.fromUnicode("✅")).queue();
     }

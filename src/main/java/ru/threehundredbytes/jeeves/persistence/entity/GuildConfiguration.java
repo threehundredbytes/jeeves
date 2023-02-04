@@ -16,4 +16,5 @@ public class GuildConfiguration {
     private Long guildId;
 
     private String prefix;
+    private String locale;
 }
