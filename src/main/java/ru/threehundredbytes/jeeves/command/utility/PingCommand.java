@@ -1,17 +1,12 @@
 package ru.threehundredbytes.jeeves.command.utility;
 
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import ru.threehundredbytes.jeeves.command.Command;
 import ru.threehundredbytes.jeeves.command.CommandGroup;
 import ru.threehundredbytes.jeeves.command.DiscordCommand;
-import ru.threehundredbytes.jeeves.model.BotContext;
-
-import java.awt.*;
 
 @DiscordCommand(key = "ping", group = CommandGroup.UTILITY)
 public class PingCommand extends Command {
@@ -20,9 +15,8 @@ public class PingCommand extends Command {
     public static final String RED_CIRCLE_EMOJI = "\uD83D\uDD34";
 
     @Override
-    public void execute(MessageReceivedEvent event, BotContext botContext) {
+    public void execute(MessageReceivedEvent event) {
         Message message = event.getMessage();
-        User botOwner = botContext.getBotOwner();
 
         long start = System.nanoTime();
 
@@ -47,13 +41,12 @@ public class PingCommand extends Command {
                 pingRating += RED_CIRCLE_EMOJI.repeat(redCount);
             }
 
-            MessageEmbed messageEmbed = new EmbedBuilder()
-                    .setTitle("Ping information")
-                    .setDescription(String.format("Delay is %d ms", ping))
+            String title = "Ping information";
+            String description = String.format("Delay is %d ms", ping);
+
+            MessageEmbed messageEmbed = messageService.getMessageEmbedBuilder(title, description)
                     .addField("Heartbeat", event.getJDA().getGatewayPing() + " ms", false)
                     .addField("Ping rating", pingRating, false)
-                    .setFooter("Developed by " + botOwner.getAsTag(), botOwner.getAvatarUrl())
-                    .setColor(new Color(29, 78, 216))
                     .build();
 
             event.getChannel().sendMessageEmbeds(messageEmbed).queue();

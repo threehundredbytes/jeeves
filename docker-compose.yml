@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15
+    container_name: jeeves-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: jeeves_database
+      POSTGRES_USER: jeeves_db_user
+      POSTGRES_PASSWORD: jeeves_db_password

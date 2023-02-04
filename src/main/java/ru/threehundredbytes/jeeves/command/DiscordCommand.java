@@ -11,4 +11,5 @@ import java.lang.annotation.*;
 public @interface DiscordCommand {
     String key();
     CommandGroup group();
+    CommandSource[] source() default { CommandSource.DIRECT_MESSAGE, CommandSource.GUILD_MESSAGE };
 }
